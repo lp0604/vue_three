@@ -8,12 +8,13 @@
 import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import gsap from 'gsap';
+import loadImg from "@/assets/icons/logo.png"
 //导入dat.gui
 import * as dat from 'dat.gui';
 export default {
   name: 'HomeView',
   components: {},
-  created() {
+  mounted() {
     this.$nextTick(()=> {
       this.init();
     })
@@ -37,53 +38,30 @@ export default {
       camera.position.set(0, 0, 10);
       scene.add(camera);
 
+      //导入纹理
+      const textureLoader = new THREE.TextureLoader();
+      const doorColorTexture = textureLoader.load(loadImg);
+
+      // 设置旋转的原点
+      // doorColorTexture.center.set(0.5, 0.5);
+      // 旋转45deg
+      // doorColorTexture.rotation = Math.PI / 4;
+      //设置纹理的重复
+      doorColorTexture.repeat.set(2, 3);
+      //设置纹理重复的模式
+      doorColorTexture.wrapS = THREE.MirroredRepeatWrapping; 
+      doorColorTexture.wrapT = THREE.RepeatWrapping;
+
       // 添加物体
-      // 创建几何体
-      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-      const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00});
-      // 根据几何体贺材质创建物体
-      const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
-      cube.rotation.set(Math.PI / 4, 0, 0);
-      // 将几何体添加到场景中
+      const cubeGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
+      //材质
+      const basicMaterial = new THREE.MeshBasicMaterial({
+        color: '#ffff00',
+        map:doorColorTexture,
+      });
+      const cube = new THREE.Mesh(cubeGeometry, basicMaterial);
       scene.add(cube);
-
-      // const gui = new dat.GUI();
-
-      // //移动
-      // gui
-      //  .add(cube.position,'x')
-      //  .min(0)
-      //  .max(5)
-      //  .step(0.01)
-      //  .name('移动x轴')
-      //  .onChange((value) => {})
-      //  .onFinishChange((value) => {});
-
-      // // 修改物体的颜色
-      // const params = {
-      //   color: '#ffff00',
-      //   fn:() => {
-      //     // 让立方体运动
-      //     gsap.to(cube.position,{x: 5, duration:2, yoyo: true, repeat: -1});
-      //   }
-      // }
-
-      //  let folder = gui.addFolder('设置立方体');
-      // //颜色
-      // folder
-      //   .addColor(params, "color")
-      //   .onChange((value) => {
-      //      cube.material.color.set(value);
-      //   });
-      // //是否显示
-      // folder.add(cube, 'visible').name('是否显示');
-      // //点击按钮触发事件
-      // folder.add(params,'fn').name('立方体运动');
-
-     
-      // folder.add(cube.material, 'wireframe');
-
+      
 
       // 初始化渲染器
       const renderer = new THREE.WebGL1Renderer();
